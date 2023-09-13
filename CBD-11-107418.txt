@@ -1,0 +1,14 @@
+help
+help ping
+help -n
+help DBSIZE
+redis-cli -n 16 DBSIZE
+help SET a b
+redis-cli SET a b
+SET a b
+GET a
+help @set
+LPUSH list a b c d
+GET list
+LPOP list
+EXIT

@@ -1,0 +1,12 @@
+LPUSH Nomes Maria
+LPUSH Nomes Jose
+LPUSH Nomes Manuel
+LPUSH Nomes Bruno
+LPUSH Nomes Bernardo
+RPUSH Nomes Mario
+SADD Numeros 1
+SADD Numeros 2
+SADD Numeros 3
+SADD Numeros 1
+SET Qualquer Coisa
+SET Outra Coisa
