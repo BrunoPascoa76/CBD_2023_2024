@@ -4,21 +4,28 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.Scanner;
-import redis.clients.jedis.Jedis;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-public class CBD_14a_107418 {
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.params.ScanParams;
+import redis.clients.jedis.resps.Tuple;
+
+public class CBD_14b_107418 {
     public static void main(String[] args) {
         Scanner sc;
         Jedis jedis = new Jedis();
         try {
-            sc = new Scanner(new File("ex4/names.txt"));
+            sc = new Scanner(new File("ex4/nomes-pt-2021.csv"));
 
             while (sc.hasNextLine()) {
-                jedis.zadd("NamesLex", 0, sc.nextLine());
+                jedis.zadd("NamesScore", 0, sc.nextLine());
             }
             sc.close();
         } catch (FileNotFoundException e) {
-            System.err.println("Error: names.txt file not found");
+            System.err.println("Error: nomes-pt-2021.csv file not found");
             return;
         }
 
@@ -27,7 +34,7 @@ public class CBD_14a_107418 {
         // prepare the reader for the output file:
         PrintWriter pw;
         try {
-            pw = new PrintWriter("ex4/CBD-14a-out-107418.txt");
+            pw = new PrintWriter("ex4/CBD-14b-out-107418.txt");
 
             // handle User input
             sc = new Scanner(System.in);
@@ -43,16 +50,23 @@ public class CBD_14a_107418 {
                     break;
                 }
 
-                // The function for this case is ZRANGEBYLEX, but since it requires both a min
-                // and a max values (and it doesn't seem we can use patterns), I'll just use as
-                // max input + xFF (highest value a byte can take)
-                for (String s : jedis.zrangeByLex("NamesLex", "[" + input, "[" + input + (char) 0XFF)) {
-                    System.out.println(s);
-                    pw.println(s);
+                Map<String, Integer> results = new HashMap<>();
+                for (String s : jedis.zrangeByLex("NamesScore", "[" + input, "[" + input + (char) 0XFF)) {
+                    String[] parts = s.split("[;,_. ]");
+                    if (parts.length != 2) {
+                        System.err.println("Error:invalid format");
+                        return;
+                    }
+                    results.put(parts[0], Integer.parseInt(parts[1]));
                 }
+                results.entrySet().stream().sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                        .forEach(entry -> {
+                            System.out.println(entry.getKey());
+                            pw.println(entry.getKey());
+                        });
+
                 System.out.printf("\n");
                 pw.printf("\n");
-
             }
             pw.close();
             sc.close();
