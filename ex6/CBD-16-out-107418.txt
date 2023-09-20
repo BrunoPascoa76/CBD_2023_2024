@@ -1,0 +1,8 @@
+UserA added
+UserB added
+UserC added
+UserA subscribed to UserB
+UserB published 'Hello World'
+UserA's messages:
+UserB: [Hello World]
+UserC's messages:
