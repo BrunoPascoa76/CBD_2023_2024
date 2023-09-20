@@ -67,7 +67,7 @@ class MessageManager {
     }
 
     public void subscribe(String user1, String user2) {
-        if (isUser(user1) && isUser(user2)) {
+        if (isUser(user1) && isUser(user2) && !jedis.sismember(user2 + ":blocked", user1)) {
             jedis.sadd(user2 + ":followers", user1);
         }
     }
@@ -105,6 +105,20 @@ class MessageManager {
             return messages;
         } else {
             return new ArrayList<>();
+        }
+    }
+
+    public void block(String user1, String user2) {
+        if (isUser(user1) && isUser(user2)) {
+            jedis.sadd(user1 + ":blocked", user2);
+            jedis.del(user1 + ":" + user2);
+            jedis.srem(user1 + ":followers", user2);
+        }
+    }
+
+    public void unblock(String user1, String user2) {
+        if (isUser(user1) && isUser(user2)) {
+            jedis.srem(user1 + ":blocked", user2);
         }
     }
 }
