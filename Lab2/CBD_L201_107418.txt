@@ -1,0 +1,8 @@
+show dbs
+TestDB    8.00 KiB
+admin    40.00 KiB
+config  108.00 KiB
+local    40.00 KiB
+testDB> use TestDB
+switched to db TestDB
+TestDB> 
