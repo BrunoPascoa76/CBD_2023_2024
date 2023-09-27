@@ -1,0 +1,23 @@
+// NMEC: 107418
+
+// 1. Liste todos os documentos da coleção.
+db.restaurants.find()
+
+// 2. Apresente os campos restaurant_id, nome, localidade e gastronomia para todos os
+documentos da coleção.
+db.restaurants.find({},{_id: false, restaurant_id: true, nome: true, localidade: true, gastronomia: true})
+
+// 3. Apresente os campos restaurant_id, nome, localidade e código postal (zipcode), mas
+exclua o campo _id de todos os documentos da coleção.
+db.restaurants.find({},{_id: false, restaurant_id: true, nome: true, localidade: true, "address.zipcode": true})
+
+// 4. Indique o total de restaurantes localizados no Bronx.
+db.restaurants.find({localidade: {$eq: 'Bronx'}},{}).count()
+// 309
+
+// 5. Apresente os primeiros 15 restaurantes localizados no Bronx, ordenados por
+ordem crescente de nome.
+db.restaurants.find({localidade: {$eq: 'Bronx'}},{}).sort({name: 1}).limit(15).count()
+
+// 6. Liste todos os restaurantes que tenham pelo menos um score superior a 85.
+db.restaurants.

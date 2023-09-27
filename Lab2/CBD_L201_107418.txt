@@ -1,3 +1,5 @@
+# CBD - Lab201 - Bruno Páscoa
+
 show dbs
 TestDB    8.00 KiB
 admin    40.00 KiB
