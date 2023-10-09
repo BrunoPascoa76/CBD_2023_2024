@@ -261,4 +261,55 @@ db.restaurants.aggregate([
   }}
 ])
 
-//27. Para cada restaurante, para cada grade, obter o número de avaliações e o score médio
+//27. Para cada restaurante (nome), para cada grade, obter o número de avaliações e o score médio, ordenado por nome e grade (respetivamente)
+db.restaurants.aggregate([
+  {$unwind: "$grades"},
+  {$group: {
+    _id:{
+      nome: "$nome",
+      grade: "$grades.grade"
+    },
+    numGrades: {$count: {}},
+    avgScore: {$avg: "$grades.score"}
+  }}
+]).sort({
+  "_id.nome": 1,
+  "_id.grade": 1
+})
+
+//28. Procurar por restaurante cujo nome contenha 'restaurant' (case-insensitive)
+db.restaurants.find({
+  nome: {
+    $regex: '.*restaurant.*',
+    $options: 'si'
+  }
+})
+
+//29. Obter histograma de scores
+db.restaurants.aggregate([
+  {$unwind: "$grades"},
+  {$bucketAuto: {
+    groupBy: "$grades.score",
+    buckets: 10
+  }}
+])
+
+//30. Ordenar restaurantes por ordem crescente de distância à posição atual (assume que estamos nas coordenadas 1,1)
+db.restaurants.aggregate([
+  {$project: {
+    _id:"$_id",
+    nome:"$nome",
+    distancia: {$sqrt: {$sum: [
+      {$pow:[
+        {$subtract: [
+          {$arrayElemAt:["$address.coord",0]},1]
+        },2
+      ]},
+      {$pow:[
+        {$subtract: [
+          {$arrayElemAt:["$address.coord",1]},1]
+        },2
+      ]}
+    ]}}
+  }}
+]).sort({distancia: 1})
