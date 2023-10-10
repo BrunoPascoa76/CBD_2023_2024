@@ -1,5 +1,6 @@
 package ua.bp;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import org.bson.Document;
@@ -17,6 +18,29 @@ public class Ex3c {
             .getDatabase("cbd")
             .getCollection("restaurants");
 
+        // 12. Liste o restaurant_id, o nome, a localidade e a gastronomia dos restaurantes localizados em "Staten Island", "Queens", ou "Brooklyn".
+        System.out.println("Exercício 12:");
+        restaurants.find(
+            new Document("localidade",new Document("$in",Arrays.asList("Staten Island","Queens","Brooklyn")))
+        ).projection(
+            new Document("_id",false)
+            .append("nome",true)
+            .append("localidade",true)
+            .append("gastronomia",true)
+        ).forEach(d->System.out.println(d.toJson()));
+        
+        // 15. Liste o restaurant_id, o nome e os score dos restaurantes nos quais a segunda avaliação foi grade "A" e ocorreu em ISODATE "2014-08-11T00: 00: 00Z".
+        System.out.println("Exercício 15: ");
+        restaurants.find(
+            new Document("grades.1.grade","A")
+            .append("grades.1.date",LocalDateTime.of(2014,8,11,0,0,0))
+            ).projection(
+                new Document("_id",false)
+                .append("restaurant_id",true)
+                .append("nome",true)
+                .append("grades.score",true)
+            ).forEach(d->System.out.println(d.toJson()));
+        
         // 17. Liste nome, gastronomia e localidade de todos os restaurantes ordenando por ordem crescente da gastronomia e, em segundo, por ordem decrescente de localidade.
         System.out.println("Exercício 17:");
         restaurants.find().projection(
@@ -29,7 +53,7 @@ public class Ex3c {
             .append("localidade",-1)
         ).forEach(d->System.out.println(d.toJson()));
         
-        /* 
+        
         // 18. Liste nome, localidade, grade e gastronomia de todos os restaurantes localizados em Brooklyn que não incluem gastronomia "American" e obtiveram uma classificação (grade) "A". Deve apresentá-los por ordem decrescente de gastronomia.
         System.out.println("\nExercício 18:");
         restaurants.find(
@@ -53,8 +77,7 @@ public class Ex3c {
             new Document("$project", new Document("_id", 1)
                 .append("numGastronomias", new Document("$size", "$distinctGastronomias")))
         )).forEach(d->System.out.println(d.toJson()));
-
-        */
+        
         System.exit(0);
     }
 }
