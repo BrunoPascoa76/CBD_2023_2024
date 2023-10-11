@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="warn" name="MyApp">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss} [%p] %m%n</Property>
+    </Properties>
+
+  <Appenders>
+    <File name="logger" fileName="./logs/${sys:logFilename}.txt" append="false">
+      <PatternLayout pattern="${LOG_PATTERN}"></PatternLayout>
+    </File>
+    <Console name="Console" target="SYSTEM_OUT" follow="true">
+        <PatternLayout pattern="${LOG_PATTERN}"/>
+    </Console>
+  </Appenders>
+  <Loggers>
+    <Root level="info">
+      <AppenderRef ref="logger"/>
+      <AppenderRef ref="Console"/>
+    </Root>
+  </Loggers>
+</Configuration>

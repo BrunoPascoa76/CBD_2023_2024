@@ -1,0 +1,6 @@
+2023-10-11 15:05:15 [INFO] Variables:
+	MAX_AMOUNT=3
+	TTL=10
+	user1=José
+	user2=Maria
+2023-10-11 15:05:16 [INFO] José
