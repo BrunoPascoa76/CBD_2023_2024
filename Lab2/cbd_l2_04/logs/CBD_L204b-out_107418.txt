@@ -1,0 +1,19 @@
+2023-10-11 17:52:32 [INFO] Variables:
+	MAX_AMOUNT=6
+	TTL=10
+	user1=José
+	user2=Maria
+2023-10-11 17:52:32 [INFO] Creating manager...
+2023-10-11 17:52:32 [INFO] Testing insertions (last one should fail):
+2023-10-11 17:52:32 [INFO] José) Inserting product Comida para cão (X2)...
+2023-10-11 17:52:32 [INFO] Insertion successful
+2023-10-11 17:52:32 [INFO] José) Inserting product Comidade para gato (X4)...
+2023-10-11 17:52:32 [INFO] Insertion successful
+2023-10-11 17:52:32 [INFO] José) Inserting product Comida para peixe (X1)...
+2023-10-11 17:52:32 [WARN] Insertion failed
+2023-10-11 17:52:32 [INFO] Testing insertion with other user (should succeed):
+2023-10-11 17:52:32 [INFO] Maria) Inserting product Comida para cão (X2)...
+2023-10-11 17:52:32 [INFO] Insertion successful
+2023-10-11 17:52:32 [INFO] Testing after waiting for TTL to expire (should succeed):
+2023-10-11 17:52:42 [INFO] José) Inserting product Comida para peixe (X1)...
+2023-10-11 17:52:42 [INFO] Insertion successful

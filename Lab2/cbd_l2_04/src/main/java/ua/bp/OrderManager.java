@@ -1,7 +1,9 @@
 package ua.bp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Date;
 
 import org.bson.Document;
 
@@ -40,7 +42,7 @@ public class OrderManager{
         }
     }
 
-    public boolean insertOrderLimitQuantity(String username, Order order) throws MongoException{
+    public boolean insertOrderLimitAmount(String username, Order order) throws MongoException{
         if(overLimit(username,order.amount())){
             return false;
         }else{
@@ -51,37 +53,47 @@ public class OrderManager{
     public boolean overLimit(String username) throws MongoException{
         LocalDateTime startDateTime=LocalDateTime.now().minusSeconds(TTL);
             
-        MongoCursor<Document> cursor=col.aggregate(Arrays.asList(
+        MongoCursor<Document> cursor =col.aggregate(Arrays.asList(
             new Document("$match",new Document("username",username)),
             new Document("$unwind","$orders"),
-            new Document("$match",new Document("timestamp",new Document("$gte",startDateTime))),
+            new Document("$match",new Document("orders.timestamp",new Document("$gte",startDateTime))),
             new Document("$count","timeSlotOrders")
         )).iterator();
-
-        if(!cursor.hasNext()){
+        
+        if(!cursor.hasNext()){ //no orders ever for this username
             return false;
         }else{
-            
+            int cnt=(int) cursor.next().get("timeSlotOrders");
+            if(cnt+1>MAX_AMOUNT){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 
     public boolean overLimit(String username, int amount) throws MongoException{
         LocalDateTime startDateTime=LocalDateTime.now().minusSeconds(TTL);
-        
-        int present_amount=(int)col.aggregate(Arrays.asList(
+
+        MongoCursor<Document> cursor =col.aggregate(Arrays.asList(
             new Document("$match",new Document("username",username)),
             new Document("$unwind","$orders"),
             new Document("$match",new Document("orders.timestamp",new Document("$gte",startDateTime))),
             new Document("$group",
-                new Document("_id","")
+                new Document("_id","''")
                 .append("totalAmount",new Document("$sum","$orders.amount"))
             )
-        )).first().get("totalAmount");
-
-        if(present_amount+amount>MAX_AMOUNT){
-            return true;
-        }else{
+        )).iterator();
+        
+        if(!cursor.hasNext()){ //no orders ever for this username
             return false;
+        }else{
+            int presentAmount=(int) cursor.next().get("totalAmount");
+            if(presentAmount+amount>MAX_AMOUNT){
+                return true;
+            }else{
+                return false;
+            }
         }
     }
 
@@ -96,5 +108,10 @@ public class OrderManager{
             new UpdateOptions().upsert(true)
         );
         return true;
+    }
+
+    //for resetting the collection
+    public void reset(){
+        col.drop();
     }
 }
