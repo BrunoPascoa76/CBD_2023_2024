@@ -1,0 +1,30 @@
+Redis:
+    Vantagens: fácil de aprender, velocidades de leitura superiores, auto-expire.
+    Desvantagens: requer alguma adaptação do problema, visto redis ser key-value
+MongoDB:
+    Vantagens: a estrutura document-oriented adapta-se melhor ao problema
+    Desvantagens: Menos eficiente (especialmente sem índices), as orders não se expiram automaticamente.
+
+Conclusão: Para resolver o problema como descrito (rate limiting), eu usaria o redis, visto ser uma operação read-heavy (read many, write one), permitindo uma resposta mais rápida. Contudo, numa situação real, usaria as duas bases de dados em conjunto, usando o redis como caching, e o mongo para armazenar os detalhes do pedido (podendo até fazer um histórico de pedidos).
+
+
+Benchmarking:
+Os dados seguintes resultam do seguinte artigo: https://ieeexplore.ieee.org/document/9585956 (que encontrei ao procurar por um standard que me permitisse resultados mais "justos") que utiliza o padrão YCSB (Yahoo! Cloud Service Benchmark).
+Tempo de inserção:
+    Mongo: 68s
+    Redis: 153s
+50% read 50% update:
+    Mongo: 65s
+    Redis: 10s
+95% read 5% update:
+    Mongo: 28s
+    Redis: 7s
+100% read:
+    Mongo: 23s
+    Redis: 6s
+5% insert 95% read:
+    Mongo: 28s
+    Redis: 8s
+
+Conclusão: Apesar de ser mais lento a inserir dados, redis é claramente superior em termos de tempos de leitura, consolidando a sua imagem como uma das melhores bases de dados para caching
+(Outra curiosidade é que ambos foram mais rápidos que Cassandra em todos os testes)
