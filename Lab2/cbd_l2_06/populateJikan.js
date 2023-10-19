@@ -4,7 +4,7 @@ populateJikan=async function(){
     let has_next_page=false
     do{
         print("page "+page)
-        response = await fetch("https://api.jikan.moe/v4/seasons/now?page="+page,{
+        response = await fetch("https://api.jikan.moe/v4/seasons/2023/fall?sfw=&page="+page,{
             headers: {
                 "Content-Type": "application/json"
             }
@@ -23,5 +23,5 @@ populateJikan=async function(){
             throw new Error("Error while fetching from API: "+errorMsg)
         }
     }while(has_next_page)
-    
+    print("done!")
 }
