@@ -11,6 +11,7 @@ Cada anime segue a seguinte estrutura JSON (campos não necessários foram omiti
     japanese_title: string,
     status: string,
     score: 0.0,
+    type: string
     titles: [
         {
             type: string,
@@ -144,7 +145,7 @@ Resposta:
     })
     ```
 
-* V) Ordene os animes por ordem decrescente de score
+* V) Ordene os animes por ordem decrescente de score.  
 Resposta:
 
     ```javascript
@@ -213,5 +214,55 @@ Resposta:
             animeCount: {$count: {}},
             averageScore: {$avg: "$score"}
         }}
+    ])
+    ```
+
+* II) obtenha o score médio.  
+Resposta:
+
+    ```javascript
+    db.jikan.aggregate([
+        {$group:{
+            _id:null,
+            averageScore: {$avg: "$score"}
+        }}
+    ])
+    ```
+
+* III) Obtenha o número total de géneros das séries (sem repetições).
+Resposta:
+
+    ```javascript
+    db.jikan.aggregate([
+        {$match: {type: "TV"}},
+        {$unwind: "$genres"},
+        {$group: {
+            _id: null,
+            genres: {$addToSet: "$genres"}
+        }},
+        {$project: {
+            numGenres: {$size: "$genres"}
+        }}
+    ])
+    ```
+  
+
+* IV) obtenha o número de géneros dos 3 animes com melhor score.  
+Resposta:
+
+    ```javascript
+    db.jikan.aggregate([
+        {$unwind: "$genres"},
+        {$group:{
+            _id: {
+                mal_id: "$mal_id",
+                english_title: "$english_title",
+                japanese_title: "$japanese_title",
+                score: "$score"
+            },
+            numGenres: {$count: {}}
+        }},
+        {$sort: {"_id.score": -1}},
+        {$limit: 3}
     ])
     ```
