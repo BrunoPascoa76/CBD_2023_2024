@@ -245,7 +245,6 @@ Resposta:
         }}
     ])
     ```
-  
 
 * IV) obtenha o número de géneros dos 3 animes com melhor score.  
 Resposta:
@@ -264,5 +263,33 @@ Resposta:
         }},
         {$sort: {"_id.score": -1}},
         {$limit: 3}
+    ])
+    ```
+
+* V) para cada type, para cada genre, obter o score médio.  
+Resposta:
+
+    ```javascript
+    db.jikan.aggregate([
+        {$unwind: "$genres"},
+        {$group:{
+            _id: {
+                type: "$type",
+                genre: "$genres.name"
+            },
+            averageScore: {$avg: "$score"}
+        }}
+    ])
+    ```
+
+* VI) obter um histograma das scores (10 buckets).  
+Resposta:
+
+    ```javascript
+    db.jikan.aggregate([
+        {$bucketAuto: {
+            groupBy: "$score",
+            buckets: 10
+        }}
     ])
     ```
