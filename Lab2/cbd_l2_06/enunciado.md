@@ -11,8 +11,12 @@ Cada anime segue a seguinte estrutura JSON (campos não necessários foram omiti
     japanese_title: string,
     status: string,
     score: 0.0,
-    season: string,
-    year: 
+    titles: [
+        {
+            type: string,
+            title: string
+        }
+    ],
     genres: [
         {
             mal_id: 0
@@ -93,9 +97,112 @@ Resposta:
     })
     ```
 
+* II) Liste os campos referidos anteriormente para todas as séries (type TV).  
+Resposta:
+
+    ```javascript
+    db.jikan.find({type:"TV"},{
+        _id:false,
+        mal_id: true,
+        title_english: true,
+        title_japanese: true,
+        status: true,
+        score: true
+    })
+    ```
+
+* III) Obtenha todos os animes com um score pertence ao intervalo ]7,9].  
+Resposta:
+
+    ```javascript
+    db.jikan.find({
+        score: {$gt: 7, $lte: 9}
+    },{
+        _id:false,
+        mal_id: true,
+        title_english: true,
+        title_japanese: true,
+        status: true,
+        score: true
+    })
+    ```
+
+* IV) Obtenha todos os animes que não são de ação.  
+Resposta:
+
+    ```javascript
+    db.jikan.find({
+        genres: {$not:{$elemMatch: {name: "Action"}}}
+    },{
+        _id:false,
+        mal_id: true,
+        title_english: true,
+        title_japanese: true,
+        status: true,
+        genres: true,
+        score: true
+    })
+    ```
+
+* V) Ordene os animes por ordem decrescente de score
+Resposta:
+
+    ```javascript
+    db.jikan.find({},{
+        _id:false,
+        mal_id: true,
+        title_english: true,
+        title_japanese: true,
+        status: true,
+        score: true
+    }).sort({score: -1})
+    ```
+
+* VI) Crie uma função em javascript que permite pesquisar animes por nome. Crie os índices que considerar necessário.
+(Pontos bónus se o aluno ordenar por relevância)
+Resposta:
+
+    ```javascript
+    
+    db.jikan.createIndex({
+        title_english: "text",
+        title_japanese: "text",
+        "titles.title": "text"
+    })
+
+    //sem ordenação:
+    searchAnime= function(name){
+        return db.jikan.find({
+            $text: {$search: "*"+name+"*"}
+        },{
+            _id:false,
+            mal_id: true,
+            title_english: true,
+            title_japanese: true,
+            status: true,
+            score:true
+        })
+    }
+    
+    //com ordenação:
+    searchAnime= function(name){
+        return db.jikan.find({
+            $text: {$search: "*"+name+"*"}
+        },{
+            _id:false,
+            mal_id: true,
+            title_english: true,
+            title_japanese: true,
+            status: true,
+            score:true,
+            relevance: {$meta: "textScore"}
+        }).sort({relevance: {$meta: "textScore"}})
+    }
+    ```
+
 d) Utilize as funções de agregação para obter os seguintes resultados:
 
-* I) Para cada género (genre), obter o nome (name), o número de animes neste época e o score médio. 
+* I) Para cada género (genre), obter o nome (name), o número de animes neste época e o score médio.  
 Resposta:
 
     ```javascript

@@ -11,6 +11,7 @@ populateJikan=async function(){
         })
         if(response.ok){
             responseJSON= await response.json()
+            data=responseJSON.data
             db.jikan.insertMany(responseJSON.data)
             has_next_page=responseJSON.pagination.has_next_page 
             page+=1
