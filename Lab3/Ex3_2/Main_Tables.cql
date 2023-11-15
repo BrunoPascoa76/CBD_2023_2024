@@ -30,9 +30,10 @@ CREATE TABLE IF NOT EXISTS comment(
 CREATE TABLE IF NOT EXISTS event(
     video_name text,
     username text,
+    event_name text,
     timestamp timestamp,
     video_moment int,
-    PRIMARY KEY ((video_name,username),timestamp,video_moment)
+    PRIMARY KEY ((video_name,username),event_name)
 );
 
 CREATE TABLE IF NOT EXISTS rating(
