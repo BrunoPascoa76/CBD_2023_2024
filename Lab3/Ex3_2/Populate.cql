@@ -48,6 +48,29 @@ insert into video (author, name, description, tags, upload_date, duration) value
 insert into video (author, name, description, tags, upload_date, duration) values ('dcordrey1', 'Girl in Progress', 'morbi a ipsum integer a nibh in quis justo maecenas rhoncus aliquam lacus morbi quis tortor id nulla ultrices aliquet maecenas leo odio condimentum id luctus nec molestie sed', ['Animation|Fantasy','Musical'], '2015-06-18 14:38:52', 1941);
 APPLY BATCH;
 
+//follower
+BEGIN BATCH
+insert into follower (video_name, followers) values ('Black Field', ['rpreskettd','mgrunbaum8','aburnsydeb']);
+insert into follower (video_name, followers) values ('Hostile Witness', ['etrevainh','alanyon6','gaskham2','wparrotj']);
+insert into follower (video_name, followers) values ('Moment of Innocence', ['gaskham2','mgrindlayi','vtustinc','rtatton5','rpreskettd','mnicklinsong','wrussilll7','bbettanay3','dcordrey1','amaus4','alanyon6']);
+insert into follower (video_name, followers) values ('A (Nun va Goldoon)', ['zsywella','amaus4','gaskham2','cpond9','dcordrey1','mgrindlayi','wparrotj','mnicklinsong']);
+insert into follower (video_name, followers) values ('Mutant Action (Acción Mutante)', ['wrussilll7','wparrotj','amaus4','aburnsydeb','dcordrey1','cpond9','rpreskettd','vtustinc','mnicklinsong','schiese0','bbettanay3']);
+insert into follower (video_name, followers) values ('Rails & Ties', ['etrevainh','schiese0','amaus4','wrussilll7','cjudef','vtustinc','mgrindlayi','semonse','rpreskettd','gaskham2','rtatton5','zsywella']);
+insert into follower (video_name, followers) values ('Shaolin Temple 3: Martial Arts of Shaolin (Nan bei Shao Lin) (Martial Arts of Shaolin)', ['rpreskettd','mnicklinsong','cjudef','bbettanay3','rtatton5','mgrindlayi','aburnsydeb','wparrotj','schiese0','dcordrey1','amaus4','mgrunbaum8','wrussilll7','gaskham2','zsywella','cpond9','semonse','vtustinc']);
+insert into follower (video_name, followers) values ('Superheroes', ['amaus4','gaskham2','mnicklinsong','mgrunbaum8','semonse','cpond9','vtustinc','schiese0','alanyon6']);
+insert into follower (video_name, followers) values ('Fletch Lives', ['amaus4','mgrunbaum8']);
+insert into follower (video_name, followers) values ('Ghost and Mrs. Muir', ['rtatton5','zsywella','rpreskettd','aburnsydeb','vtustinc','schiese0','cpond9','mgrindlayi','alanyon6','etrevainh','wparrotj','amaus4','mgrunbaum8','wrussilll7','mnicklinsong','bbettanay3','gaskham2','dcordrey1','cjudef','semonse']);
+insert into follower (video_name, followers) values ('Girl in Progress', ['mnicklinsong','vtustinc','dcordrey1','amaus4','etrevainh','semonse','schiese0','wrussilll7','rtatton5','wparrotj','cjudef','gaskham2','rpreskettd','bbettanay3']);
+insert into follower (video_name, followers) values ('Vampire Apocalypse', ['cjudef','mnicklinsong','amaus4','wparrotj','bbettanay3','mgrindlayi','schiese0','gaskham2','vtustinc','rpreskettd','semonse','rtatton5','mgrunbaum8','etrevainh','cpond9','wrussilll7','zsywella','alanyon6','aburnsydeb','dcordrey1']);
+insert into follower (video_name, followers) values ('Around the World', ['mgrunbaum8','gaskham2','semonse','vtustinc','cjudef','dcordrey1','bbettanay3','amaus4','aburnsydeb','cpond9','wparrotj','rpreskettd']);
+insert into follower (video_name, followers) values ('Education of Charlie Banks', ['mnicklinsong','rtatton5']);
+insert into follower (video_name, followers) values ('The', ['rpreskettd','zsywella','mgrindlayi','rtatton5','schiese0','gaskham2','semonse','wparrotj','vtustinc','bbettanay3','etrevainh','amaus4']);
+insert into follower (video_name, followers) values ('Flashback', ['rpreskettd','zsywella','mgrindlayi','wrussilll7','rtatton5','cpond9','etrevainh','dcordrey1','alanyon6','wparrotj','aburnsydeb','vtustinc','mgrunbaum8','semonse','mnicklinsong','cjudef','amaus4']);
+insert into follower (video_name, followers) values ('Forever Strong', ['alanyon6','zsywella','etrevainh','mgrunbaum8','wparrotj','vtustinc','aburnsydeb']);
+insert into follower (video_name, followers) values ('Frenchmen (Le coeur des hommes)', ['semonse','zsywella','wrussilll7','mgrunbaum8','bbettanay3','wparrotj','alanyon6','aburnsydeb']);
+insert into follower (video_name, followers) values ('Holy Girl', ['wparrotj','alanyon6','cjudef','mnicklinsong','etrevainh','dcordrey1','gaskham2','mgrunbaum8','bbettanay3','rpreskettd','aburnsydeb','semonse','cpond9','vtustinc']);
+insert into follower (video_name, followers) values ('The (Niña santa', ['mnicklinsong','wparrotj']);
+APPLY BATCH;
 //comment
 BEGIN BATCH
 insert into comment (video_name, author, comment, timestamp) values ('Superheroes', 'cpond9', 'sit amet nulla quisque arcu libero rutrum ac lobortis vel dapibus at diam nam tristique tortor', '2008-08-19 12:50:17');

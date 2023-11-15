@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS video(
     Primary KEY(author,name)
 );
 
+CREATE TABLE IF NOT EXISTS follower(
+    video_name text PRIMARY KEY,
+    followers list<text>
+);
+
 CREATE TABLE IF NOT EXISTS comment(
     video_name text,
     author text,
@@ -27,13 +32,14 @@ CREATE TABLE IF NOT EXISTS comment(
     PRIMARY KEY (video_name,timestamp,author)
 );
 
+
 CREATE TABLE IF NOT EXISTS event(
     video_name text,
     username text,
     event_name text,
     timestamp timestamp,
     video_moment int,
-    PRIMARY KEY ((video_name,username),event_name)
+    PRIMARY KEY ((video_name,username),timestamp)
 );
 
 CREATE TABLE IF NOT EXISTS rating(
