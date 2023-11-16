@@ -61,3 +61,101 @@ WHERE video_name='Superheroes';
 SELECT videos FROM user_following WHERE username='cpond9';
 //For each element in the returned list:
 SELECT * FROM comment WHERE video_name='Superheroes';
+
+// 9. Os 5 vídeos com maior rating;
+// it's not possible (unless we create a temporary table, but, at that point, it's prefereable to order in the client side), because we can't order by aggregates
+
+// 10. Uma query que retorne todos os vídeos e que mostre claramente a forma pela qual estão ordenados;
+// Unless I missed something, we can't just add fields during the SELECT, so it's impossible
+
+// 11. Lista com as Tags existentes e o número de vídeos catalogados com cada uma delas;
+// This is impossible without altering the current schema by using a "tag" table
+CREATE TABLE tag(
+    tag text,
+    movies int
+);
+
+// 12. Get the max, min and average and number of ratings of every (rated) video
+SELECT video_name, count(*) AS total_ratings, min(value) AS worst_rating,avg(value) as average_rating, max(value) AS best_rating
+FROM rating
+GROUP BY video_name;
+/*
+Results:
+[
+  {
+    "video_name": "Frenchmen (Le coeur des hommes)",
+    "total_ratings": 3,
+    "worst_rating": 2,
+    "average_rating": 3,
+    "best_rating": 5
+  },
+  {
+    "video_name": "Superheroes",
+    "total_ratings": 4,
+    "worst_rating": 2,
+    "average_rating": 3,
+    "best_rating": 5
+  },
+  {
+    "video_name": "Around the World",
+    "total_ratings": 4,
+    "worst_rating": 1,
+    "average_rating": 2,
+    "best_rating": 4
+  }
+]
+ */
+
+// For each video, for each user, count the number of events
+SELECT video_name,username,count(event_name) AS num_events FROM event
+GROUP BY video_name,username;
+/*
+ [
+  {
+    "video_name": "Around the World",
+    "username": "mgrunbaum8",
+    "num_events": 3
+  },
+  {
+    "video_name": "Frenchmen (Le coeur des hommes)",
+    "username": "mnicklinsong",
+    "num_events": 1
+  },
+  {
+    "video_name": "Around the World",
+    "username": "mnicklinsong",
+    "num_events": 2
+  },
+  {
+    "video_name": "Around the World",
+    "username": "cpond9",
+    "num_events": 1
+  },
+  {
+    "video_name": "Superheroes",
+    "username": "mnicklinsong",
+    "num_events": 3
+  },
+  {
+    "video_name": "Frenchmen (Le coeur des hommes)",
+    "username": "cpond9",
+    "num_events": 3
+  },
+  {
+    "video_name": "Superheroes",
+    "username": "cpond9",
+    "num_events": 2
+  },
+  {
+    "video_name": "Frenchmen (Le coeur des hommes)",
+    "username": "mgrunbaum8",
+    "num_events": 3
+  },
+  {
+    "video_name": "Superheroes",
+    "username": "mgrunbaum8",
+    "num_events": 2
+  }
+]
+ */
+

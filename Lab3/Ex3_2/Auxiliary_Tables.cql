@@ -17,10 +17,9 @@ CREATE TABLE IF NOT EXISTS video_by_name(
     Primary KEY(name)
 );
 
-CREATE INDEX vdate ON video(upload_date);
+CREATE INDEX IF NOT EXISTS vdate ON video(upload_date);
 
-CREATE TABLE user_following(
+CREATE TABLE IF NOT EXISTS user_following(
     username text PRIMARY KEY ,
     videos List<text>
 );
-
