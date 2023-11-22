@@ -14,7 +14,7 @@ import com.datastax.oss.driver.api.querybuilder.schema.CreateKeyspace;
 import com.datastax.oss.driver.api.querybuilder.schema.CreateTable;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 
-public class CassandraTest{
+public class Ex3_a{
     public static void main(String[] args){
         CqlSession session=CqlSession.builder().addContactPoint(new InetSocketAddress("127.0.0.1",9042)).withLocalDatacenter("datacenter1").build();
 
@@ -41,7 +41,7 @@ public class CassandraTest{
             System.out.printf("id: %d name %s \n",x.getInt("id"),x.getString("name"))
         );
 
-        session.execute("DROP KEYSPACE test_keyspace;");
+        session.close();
         System.exit(0);
     }
 }

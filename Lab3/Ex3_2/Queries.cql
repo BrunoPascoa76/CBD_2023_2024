@@ -106,7 +106,7 @@ Results:
 ]
  */
 
-// For each video, for each user, count the number of events
+// 13. For each video, for each user, count the number of events
 SELECT video_name,username,count(event_name) AS num_events FROM event
 GROUP BY video_name,username;
 /*
