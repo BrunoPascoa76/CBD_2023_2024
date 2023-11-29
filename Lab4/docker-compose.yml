@@ -1,7 +1,7 @@
 version: 'v2.23.0'
 services:
   neo4j:
-    image: neo4j:latest
+    image: neo4j:5.13-enterprise
     container_name: neo4j
     ports:
       - 7474:7474
@@ -12,3 +12,4 @@ services:
       - SYS_RESOURCE
     environment:
       - NEO4J_AUTH=none
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
