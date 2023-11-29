@@ -1,0 +1,9 @@
+// NMEC: 107418
+#1
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(p)  RETURN p.name,m.title
+
+#2
+MATCH (m:Movie)<-[:ACTED_IN]-(p:Person) WHERE m.released>2005 RETURN m.title, p.name
+
+#3
+
