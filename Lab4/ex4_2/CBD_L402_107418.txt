@@ -6,4 +6,131 @@ MATCH (p:Person)-[:ACTED_IN]->(m:Movie)<-[:DIRECTED]-(p)  RETURN p.name,m.title
 MATCH (m:Movie)<-[:ACTED_IN]-(p:Person) WHERE m.released>2005 RETURN m.title, p.name
 
 #3
+MATCH (e1)-[r1]->(e2) WITH e1 as e1, e2 as e2, count(r1) AS num_relations 
+Where num_relations>=2
+RETURN e1,e2
 
+#4
+MATCH (p1:Person)-[:REVIEWED]->(m:Movie)<-[:REVIEWED]-(p2:Person)
+RETURN p1.name,p2.name,m.title
+
+#5
+MATCH (p1:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p2:Person) 
+WITH p1 as p1, p2 as p2, COUNT(m) AS num_movies
+WHERE num_movies>=2
+RETURN p1,p2
+
+#6
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie {title:"Apollo 13"})
+RETURN AVG(m.released-p.born)
+
+#7
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WITH  m as m, ROUND(AVG(m.released-p.born),2) AS average_age
+RETURN m,average_age
+ORDER BY average_age DESC
+LIMIT 10
+
+#8
+CALL{
+    MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+    WITH  m as m, ROUND(AVG(m.released-p.born),2) AS average_age
+    RETURN m,average_age
+    ORDER BY average_age DESC
+    LIMIT 1
+}
+WITH m as youngestCast
+MATCH (p:Person)-[:ACTED_IN]->(m:Movie)
+WHERE m=youngestCast
+RETURN m,p
+
+#9
+MATCH
+    (jc:Person {name:"John Cusack"}),
+    (dm:Person {name:"Demi Moore"}),
+    p=shortestPath((jc)-[*]-(dm))
+RETURN p
+
+#10
+MATCH
+    (kr:Person {name:"Keanu Reeves"}),
+    (tc:Person {name:"Tom Cruise"}),
+    p=shortestPath((kr)-[*]-(tc))
+RETURN length(p)
+
+#11
+MATCH
+    (p1:Person),
+    (p2:Person)
+WHERE p1<>p2 AND p1.name =~ "Jim .*" AND p2.name =~ "Kevin .*"
+WITH length(shortestPath((p1)-[*]-(p2))) AS dist
+RETURN dist
+ORDER BY dist
+LIMIT 1
+
+#12
+//distance implies shortest path
+MATCH
+    (p:Person),
+    (jc:Person {name: "Jim Cash"})
+WHERE p<>jc
+WITH length(shortestPath((p)-[*]-(jc))) AS dist, p
+WHERE dist=2
+RETURN p
+
+#13
+MATCH
+    (p:Person),
+    (kb:Person {name: "Kevin Bacon"})
+WHERE p<>kb
+WITH length(shortestPath((p)-[*]-(kb))) AS dist
+RETURN dist
+ORDER BY dist DESC
+LIMIT 1
+
+#14
+MATCH
+    (p1:Person),
+    (p2:Person)
+WHERE p1<>p2
+WITH length(shortestPath((p1)-[*]-(p2))) AS dist
+RETURN dist
+ORDER BY dist DESC
+LIMIT 1
+
+#15
+MATCH (p1:Person),(p2:Person)
+WHERE p1<>p2
+WITH length(shortestPath((p1)-[*]-(p2))) AS dist,p1,p2
+RETURN dist,count(*) AS num_pairs
+ORDER BY dist
+
+#16
+// I interpreted it as "if we only consider the acted_in relations, find the average distance between each person and the rest and the 10 people with the lowest average", but I may be wrong
+MATCH
+    (p1:Person),
+    (p2:Person)
+WHERE p1<>p2
+WITH length(shortestPath((p1)-[*]-(p2))) AS dist,p1
+WITH p1,AVG(dist) AS average_distance
+RETURN p1
+ORDER BY average_distance
+LIMIT 10
+
+#17
+MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+WITH p, COLLECT(r) as relation_list
+WITH p, reduce(lst=[],r in relation_list | lst+r.roles) as role_list
+WHERE ANY(r in role_list WHERE r=~"Dr\\..*")
+RETURN p, collect(DISTINCT role_list)[0] AS role_list
+
+#18
+// devolve uma lista de filmes que os co-atores de Keanu Reeves participaram, mas ele não participou, ordenado por ordem decrescente de co-atores que participaram
+// (inicialmente pretendia usar o reviews (sistema de recomendações básico), mas este era esparso demais).
+Query:
+MATCH (coactor:Person)-[:ACTED_IN]->(m:Movie)
+WHERE NOT (m)<-[:ACTED_IN]-(:Person {name:"Keanu Reeves"})
+WITH m,COUNT(coactor) AS num_coactors
+RETURN m,num_coactors
+ORDER BY num_coactors DESC
+Resultado: (ver alinea_18.json)
