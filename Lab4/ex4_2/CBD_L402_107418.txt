@@ -127,10 +127,24 @@ RETURN p, collect(DISTINCT role_list)[0] AS role_list
 #18
 // devolve uma lista de filmes que os co-atores de Keanu Reeves participaram, mas ele não participou, ordenado por ordem decrescente de co-atores que participaram
 // (inicialmente pretendia usar o reviews (sistema de recomendações básico), mas este era esparso demais).
-Query:
+//Query:
 MATCH (coactor:Person)-[:ACTED_IN]->(m:Movie)
 WHERE NOT (m)<-[:ACTED_IN]-(:Person {name:"Keanu Reeves"})
 WITH m,COUNT(coactor) AS num_coactors
 RETURN m,num_coactors
 ORDER BY num_coactors DESC
-Resultado: (ver alinea_18.json)
+
+//Resultado: (ver alinea_18.json)
+
+#19
+// devolve o número de vezes que cada ator representou cada papel, ordenado por ordem decrescente por este valor
+//Query:
+MATCH (p:Person)-[r:ACTED_IN]->(m:Movie)
+WITH p,COLLECT(r) AS relation_list
+WITH p, reduce(lst=[],r in relation_list | lst+r.roles) AS role_list
+UNWIND role_list as roles
+WITH DISTINCT p,roles,count(*) as num_appearances
+RETURN p,roles,num_appearances
+ORDER BY num_appearances DESC
+
+//Resultado: (ver alinea_19.json)
