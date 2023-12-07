@@ -148,3 +148,13 @@ RETURN p,roles,num_appearances
 ORDER BY num_appearances DESC
 
 //Resultado: (ver alinea_19.json)
+
+#20
+// devolve uma lista de co-atores, removendo pares de atores duplicados (a ordem não importa)
+// (a solução em si é relativamente simples, mas é preciso primeiro chegar a essa solução)
+//Query:
+MATCH (p1:Person)-[:ACTED_IN]->(m:Movie)<-[:ACTED_IN]-(p2:Person)
+WHERE p1.name>p2.name
+RETURN p1.name,p2.name,m.title
+
+// Resultado: (ver alinea_20.json)
