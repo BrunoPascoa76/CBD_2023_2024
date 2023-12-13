@@ -1,0 +1,59 @@
+// NMEC: 107418
+
+# a e b)
+//svn_id is not 1-per-person. proof:
+// 403,ri0403,Rick McGuire,Apache Geronimo,Committer,IBM
+// 1356,ri1356,Rick McGuire,Apache Geronimo,Committer,IBM
+// but, for the sake of complying with the exercises' intentions, I'll pretend it is (note that this will create multiple persons with the same name)
+
+LOAD CSV WITH HEADERS FROM 'file:///github/git_selection.csv' AS row
+MERGE (per:Person {svn_id: row.svn_id, name: row.real_name})
+MERGE (proj:Project {name: row.project_name})
+MERGE (org:Organization {name: row.organization})
+MERGE (per)-[wo:WORKS_ON {role: row.role_on_project}]->(proj)
+MERGE (org)-[o:OWNS]->(proj)
+
+#c)
+#1
+// returning everything as it was in the csv
+MATCH (per:Person)-[wo:WORKS_ON]->(proj:Project)<-[:OWNS]-(org:Organization)
+RETURN per.svn_id AS svn_id, per.name AS real_name, proj.name AS project_name, wo.role AS role_on_project, org.name AS organization
+
+#2
+MATCH (per:Person) RETURN per.name
+
+#3
+//I'll assume the information is just name
+MATCH (per:Person)-[:WORKS_ON]->(proj:Project)
+RETURN DISTINCT proj.name
+
+#4
+//you'll need to scroll right to see the num_projects
+MATCH (per:Person)-[:WORKS_ON]->(proj:Project)
+WITH per,COLLECT(DISTINCT proj.name) AS projects, COUNT(DISTINCT proj.name) AS num_projects
+RETURN per.name,projects,num_projects
+
+#5
+//you'll need to scroll right to see the num_projects
+MATCH (per:Person)-[:WORKS_ON]->(proj:Project)
+WITH per,COLLECT(DISTINCT proj.name) AS projects, COUNT(DISTINCT proj.name) AS num_projects
+RETURN per.name,projects,num_projects
+ORDER BY num_projects DESC
+
+#6
+MATCH (per:Person)-[:WORKS_ON]->(proj:Project)
+WITH proj,COLLECT(DISTINCT per.name) AS members, COUNT(DISTINCT per.name) AS num_members
+RETURN proj.name,members,num_members
+
+#7
+MATCH (per:Person)-[wo:WORKS_ON {role:"Committer"}]->(proj:Project)
+WITH proj,COLLECT(DISTINCT per.name) AS members, COUNT(DISTINCT per.name) AS num_members
+RETURN proj.name,members,num_members
+
+#8
+MATCH (atm:Person {svn_id:"atm"})-[:WORKS_ON]->(proj:Project)<-[:WORKS_ON]-(per:Person)
+RETURN DISTINCT atm.name as atm_name,proj.name as project_name,per.name as user2_name
+
+#9
+MATCH (atm:Person {svn_id:"atm"})-[:WORKS_ON {role:"PMC"}]->(proj:Project)<-[:WORKS_ON {role:"Committer"}]-(per:Person)
+RETURN DISTINCT atm.name as atm_name,proj.name as project_name,per.name as user2_name
