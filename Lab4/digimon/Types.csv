@@ -1,0 +1,4 @@
+strong_type,weak_type
+Vaccine,Virus
+Virus,Data
+Data,Vaccine

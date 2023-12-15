@@ -1,39 +1,136 @@
 from neo4j import GraphDatabase, RoutingControl
 from pprint import pprint
+from time import perf_counter
 
 
 def import_csv(driver,reset=False):
     """Imports data from csv"""
+    #note: some information that is irrelevant to this exercise will not be included (like Memory or Equip_Slots)
     if reset:
         reset_db(driver)
         create_indexes(driver)
+    print("importing from csv...")
+    start_time=perf_counter()
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Digimon.csv' as row
+        MERGE (d:Digimon {number:toInteger(row.Number)})
+        MERGE (s:Stage {name:row.Stage})
+        MERGE (t:Type {name:row.Type})
+        MERGE (a:Attribute {name:row.Attribute})
+        MERGE (d)-[:IS]->(s)
+        MERGE (d)-[:IS]->(t)
+        MERGE (d)-[:IS]->(a) 
+        SET d={
+            number:toInteger(row.Number), 
+            name:row.Digimon,
+            maxHP: toInteger(row.HP_lvl_99),
+            maxSP: toInteger(row.SP_lvl_99),
+            maxATK:toInteger(row.ATK_lvl_99),
+            maxDEF:toInteger(row.DEF_lvl_99),
+            maxINT:toInteger(row.INT_level_99),
+            maxSPD:toInteger(row.SPD_lvl_99)
+        }
+        """, database_="digimon"
+    )
+    digimon_time=perf_counter()
+    print(f"imported digimon in {digimon_time-start_time}s")
+
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Attributes.csv' as row
+        MERGE (strong:Attribute {name: row.strong_attribute})
+        MERGE (weak:Attribute {name: row.weak_attribute})
+        MERGE (strong)-[sa:STRONG_AGAINST]->(weak)
+        SET sa.multiplier=1.5
+        """, database_="digimon"
+    )
+    attribute_time=perf_counter()
+    print(f"imported attribute relations in {attribute_time-digimon_time}s")
+
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Types.csv' as row
+        MERGE (strong:Type {name: row.strong_type})
+        MERGE (weak:Type {name: row.weak_type})
+        MERGE (strong)-[sa:STRONG_AGAINST]->(weak)
+        SET sa.multiplier=2.0
+        """, database_="digimon"
+    )
+    type_time=perf_counter()
+    print(f"imported types in {type_time-attribute_time}s")
+
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Skills.csv' as row
+        MERGE (s:Skill {name:row.Skill})
+        MERGE (t:Skill_Type {name: row.Type})
+        MERGE (a:Attribute {name: row.Attribute})
+        MERGE (s)-[:IS]->(t)
+        MERGE (s)-[:IS]->(a)
+        SET s={
+            name:row.Skill,
+            cost:toInteger(row.SP_Cost),
+            power:toInteger(row.Power),
+            description:row.Description
+        }
+        """, database_="digimon"
+    )
+    
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Skills_by_Digimon.csv' as row
+        MERGE (d:Digimon {name:row.Digimon})
+        MERGE (s:Skill {name:row.Skill})
+        MERGE (d)-[h:HAS]->(s)
+        SET h.level=toInteger(row.Level)
+        """, database_="digimon"
+    )
+    skill_time=perf_counter()
+    print(f"imported skills in {skill_time-type_time}s")
+
+    driver.execute_query(
+        """
+        LOAD CSV WITH HEADERS FROM 'file:///digimon/Digivolutions.csv' as row
+        MATCH (from:Digimon {name: row.Digivolves_from})
+        MERGE (to:Digimon {name: row.Digivolves_to})
+        MERGE (from)-[:EVOLVES]->(to)
+        """, database_="digimon"
+    )
+    digivolution_time=perf_counter()
+    print(f"imported digivolutions in {digivolution_time-skill_time}")
+    print(f"finished importing in {digivolution_time-start_time}s")
     
 def reset_db(driver):
     """Clears the database"""
+    print("resetting...")
     driver.execute_query(
-        "MATCH (n)"
+        "MATCH (n) "
         "DETACH DELETE n",
         database_="digimon"
     )
+    print("reset complete")
 
 def create_indexes(driver):
+    print("creating indexes...")
     #indexes created to optimize importing:
     driver.execute_query(
-        "CREATE INDEX digimon_number_index FOR (d:Digimon) ON (d.number) IF NOT EXISTS",
+        "CREATE INDEX digimon_number_index IF NOT EXISTS FOR (d:Digimon) ON (d.number) ",
         database_="digimon"
     )
     driver.execute_query(
-        "CREATE INDEX digimon_name_index FOR (d:Digimon) ON (d.name) IF NOT EXISTS",
+        "CREATE INDEX digimon_name_index IF NOT EXISTS FOR (d:Digimon) ON (d.name)",
         database_="digimon"
     )
     driver.execute_query(
-        "CREATE INDEX digimon_number_index FOR (d:Digimon) ON (d.number) IF NOT EXISTS",
+        "CREATE INDEX digimon_number_index IF NOT EXISTS FOR (d:Digimon) ON (d.number)",
         database_="digimon"
     )
     driver.execute_query(
-        "CREATE INDEX skill_name_index FOR (d:Skill) ON (d.name) IF NOT EXISTS",
+        "CREATE INDEX skill_name_index IF NOT EXISTS FOR (d:Skill) ON (d.name)",
         database_="digimon"
     )
+    print("index creation complete")
     
 
 # query 1: search a digimon by name
@@ -72,12 +169,12 @@ def get_avg_stats_all(driver):
 def get_avg_stats_line(driver,digimon):
     pass
 
-# query 10: get all the "final evolution" digimon (digimon that can't evolve into anything)
+# query 10: get all the "final evolution" digimon (digimon that can't evolve into anything are marked as 'N/A' in the dataset)
 
 
 def main():
-    with GraphDatabase.bolt_driver("bolt://localhost:7687") as driver:
-        import_csv(driver)
+    with GraphDatabase.driver("bolt://localhost:7687") as driver:
+        import_csv(driver,True)
 
 
 if __name__=="__main__":

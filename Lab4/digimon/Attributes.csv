@@ -1,0 +1,9 @@
+strong_attribute,weak_attribute
+Fire,Plant
+Plant,Water
+Water,Fire
+Electric,Wind
+Wind,Earth
+Earth,Electric
+Light,Dark
+Dark,Light
